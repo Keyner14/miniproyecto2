@@ -1,6 +1,6 @@
 package com.example.hellojavafx;
 
-import com.example.hellojavafx.view.informacionView;
+import  com.example.hellojavafx.view.informacionView;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

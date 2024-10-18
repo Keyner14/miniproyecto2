@@ -35,10 +35,10 @@ public class informacionView extends Stage
         Parent root = loader.load();
         // se usa para conectar la vista de Game con el controlador de game
         this.informacionController = loader.getController();
-        this.setTitle("Sol eclipsado");
+        this.setTitle("Sudoku");
         Scene scene = new Scene(root);
         this.getIcons().add(new Image(
-                getClass().getResourceAsStream("/com/example/hellojavafx/images/sol.png")
+                getClass().getResourceAsStream("/com/example/hellojavafx/images/sudoku.png")
         ));
         this.setScene(scene);
         this.show();

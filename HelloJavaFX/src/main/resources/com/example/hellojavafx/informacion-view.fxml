@@ -6,16 +6,16 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="519.0" prefWidth="831.0" spacing="20.0" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.hellojavafx.controllers.informacionController">
+<VBox alignment="CENTER" prefHeight="519.0" prefWidth="831.0" spacing="20.0" style="-fx-background-color: black;" xmlns="http://javafx.com/javafx/22" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.hellojavafx.controllers.informacionController">
     <padding>
         <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
     </padding>
-   <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="TOP" prefHeight="18.0" prefWidth="682.0" text="Sudoku" textAlignment="CENTER">
+   <Label fx:id="titleLabel" alignment="CENTER" contentDisplay="TOP" prefHeight="18.0" prefWidth="682.0" text="Sudoku" textAlignment="CENTER" textFill="WHITE">
       <font>
          <Font size="36.0" />
       </font></Label>
 
-    <Label fx:id="nicknameLabel" prefHeight="77.0" prefWidth="662.0" text="El objetivo del juego es completar una cuadrícula de 6x6 con números del 1 al 6, de manera que cada fila,columna y bloque de 2x3 contenga todos los números sin repetir. " textAlignment="CENTER" wrapText="true">
+    <Label fx:id="nicknameLabel" prefHeight="77.0" prefWidth="662.0" text="El objetivo del juego es completar una cuadrícula de 6x6 con números del 1 al 6, de manera que cada fila,columna y bloque de 2x3 contenga todos los números sin repetir. " textAlignment="CENTER" textFill="WHITE" wrapText="true">
       <font>
          <Font size="16.0" />
       </font></Label>

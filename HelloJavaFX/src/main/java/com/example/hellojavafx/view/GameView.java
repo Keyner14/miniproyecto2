@@ -21,25 +21,16 @@ public class GameView extends Stage
      * The controller associated with this view.
      */
     private GameController gameController;
-    /**
-     * Constructor for GameView.
-     * Loads the FXML layout and initializes the controller with the given game model.
-     *
-     * @param gameModel the game model to be used by the controller
-     * @throws IOException if the FXML file cannot be loaded
-     */
-    public GameView(GameModel gameModel) throws IOException
+
+    public GameView() throws IOException
     {
         FXMLLoader loader = new FXMLLoader(getClass().getResource("/com/example/hellojavafx/game-view.fxml"));
-        loader.setControllerFactory(param -> new GameController(gameModel));
         Parent root = loader.load();
-        // se usa para conectar la vista de Game con el controlador de game
         this.gameController = loader.getController();
-        this.setTitle("Sol eclipsado");
-        this.getIcons().add(new Image(getClass().getResourceAsStream("/com/example/hellojavafx/images/sol.png")));
+        this.setTitle("Sudoku");
+        this.getIcons().add(new Image(getClass().getResourceAsStream("/com/example/hellojavafx/images/sudoku.png")));
         Scene scene = new Scene(root);
         this.setScene(scene);
-        this.show();
     }
     /**
      * Gets the controller associated with this view.
@@ -50,16 +41,10 @@ public class GameView extends Stage
     {
         return this.gameController;
     }
-    /**
-     * Gets the singleton instance of GameView.
-     *
-     * @param gameModel the game model to be used by the controller
-     * @return the singleton instance of GameView
-     * @throws IOException if the FXML file cannot be loaded
-     */
-    public static GameView getInstance(GameModel gameModel) throws IOException
+
+    public static GameView getInstance() throws IOException
     {
-        return GameViewHolder.INSTANCE = new GameView(gameModel);
+        return GameViewHolder.INSTANCE = new GameView();
     }
     /**
      * Holder class for the singleton instance of GameView.

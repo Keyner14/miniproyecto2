@@ -28,21 +28,13 @@ public class informacionController
      */
     private informacionModel informacionModel;
     /**
-     * The model that represents the game state.
-     */
-    private GameModel gameModel;
-    /**
      * The text field where the user inputs the word.
      */
     private Stage stage;
     /**
      * The text field where the user inputs the word.
      */
-    @FXML
-    private TextField escribirCuadro;
-    /**
-     * The label for the title.
-     */
+
     @FXML
     private Label titleLabel;
     /**
@@ -59,41 +51,6 @@ public class informacionController
     {
         this.informacionModel = new informacionModel();
     }
-
-    /**
-     * Handles the play button action.
-     * Validates the input word and initializes the game view if the word is valid.
-     *
-     * @param event the action event triggered by the play button
-     */
-    @FXML
-    public void onHandlePlayButton(ActionEvent event)
-    {
-
-        System.out.println("Pasé por el boton de jugar");
-        this.cuadroQueLee();
-        if (informacionModel.getPalabraValida())
-        {
-            try {
-                GameView gameview = GameView.getInstance(gameModel);
-                gameview.getGameController().initialize();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
-            stage.close();
-
-        }
-        else
-        {
-            new AlertBox().showAlert(
-                    "Error",
-                    "La palabra debe tener entre 6 y 12 caracteres, sin espacios ni números.",
-                    "Digite una palabra valida",
-                    Alert.AlertType.ERROR
-            );
-        }
-    }
     /**
      * Sets the stage for the current scene.
      *
@@ -104,34 +61,31 @@ public class informacionController
     }
 
     /**
-     * Reads the input word from the text field and validates it.
-     * If the word is valid, it initializes the game model with the word.
+     * Handles the play button action.
+     * Validates the input word and initializes the game view if the word is valid.
+     *
+     * @param event the action event triggered by the play button
      */
     @FXML
-    public void cuadroQueLee()
+    public void onHandlePlayButton(ActionEvent event)
     {
-        String palabra = escribirCuadro.getText();
-
-        if(informacionModel.comprobarCondiciones(palabra))
+        AlertBox alertBox = new AlertBox();
+        boolean confirmed = alertBox.showConfirmation("Confirmacion", "¿Estas seguro que quieres jugar?");
+        if (confirmed)
         {
-            palabra = palabra.toUpperCase();
-            ArrayList<String> palabraArray = new ArrayList<String>();
-            for (char c : palabra.toCharArray()) {
-                palabraArray.add(String.valueOf(c));
+            try
+            {
+                GameView gameview = GameView.getInstance();
+                gameview.show();
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            this.gameModel = new GameModel(palabra.length());
-            gameModel.setPalabraAdivinar(palabra);
-            gameModel.setLongitud(gameModel.getPalabraAdivinar().length());
-            System.out.println("La longitud de la palabra es: " + gameModel.getLongitud());
-            gameModel.setPalabraConCaracteresAdivinar(palabraArray);
+            Stage stage = (Stage) ((Node) event.getSource()).getScene().getWindow();
+            stage.close();
         }
-        else
-        {
-            System.out.println("La palabra no es valida");
-        }
+
+
 
     }
-
-
 
 }
