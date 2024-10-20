@@ -10,9 +10,21 @@ import java.util.List;
  */
 public class GameModel
 {
+    /**
+     * The completed matrix of the game, representing the final solved state.
+     */
     private ArrayList<ArrayList<String>> matrixCompleted = new ArrayList<>();
+    /**
+     * The uncompleted matrix of the game, representing the current state with some cells empty.
+     */
     private ArrayList<ArrayList<String>> matrixUncompleted = new ArrayList<>();
+    /**
+     * A list of numbers used for generating random values in the game.
+     */
     private ArrayList<Integer> numbers;
+    /**
+     * Constructs a new GameModel and initializes the matrices and numbers list.
+     */
     public GameModel()
     {
         numbers = new ArrayList<>(List.of(1, 2, 3, 4, 5));
@@ -23,6 +35,9 @@ public class GameModel
             matrixUncompleted.add(uncompletedRow);
         }
     }
+    /**
+     * Resets both the completed and uncompleted matrices.
+     */
     public void resetBothMatrix()
     {
         matrixCompleted.clear();
@@ -73,7 +88,11 @@ public class GameModel
 
         return true;
     }
-
+    /**
+     * Sets the completed matrix based on the given option.
+     *
+     * @param option the option to select the sudoku board
+     */
     public void SetMatrix(int option)
     {
         if(option == 1)
@@ -122,14 +141,32 @@ public class GameModel
             matrixCompleted.add(new ArrayList<>(List.of("5", "1", "2", "4", "3", "6")));
         }
     }
+    /**
+     * Returns the completed matrix.
+     *
+     * @return the completed matrix
+     */
     public ArrayList<ArrayList<String>> getMatrixCompleted()
     {
         return matrixCompleted;
     }
+    /**
+     * Returns the uncompleted matrix.
+     *
+     * @return the uncompleted matrix
+     */
     public ArrayList<ArrayList<String>> getMatrixUncompleted()
     {
         return matrixUncompleted;
     }
+
+    /**
+     * Inserts a value into the uncompleted matrix at the specified row and column.
+     *
+     * @param row the row index of the cell
+     * @param col the column index of the cell
+     * @param value the value to insert
+     */
     public void insertValueIntoMatrixUncompleted(int row, int col, String value) {
         // Ensure the matrixUncompleted has enough rows
         while (matrixUncompleted.size() <= row) {
@@ -144,6 +181,10 @@ public class GameModel
         // Insert the value
         matrixUncompleted.get(row).set(col, value);
     }
+
+    /**
+     * Inserts random values from the completed matrix into the uncompleted matrix.
+     */
     // Ensure matrixUncompleted has the same structure as matrixCompleted
     public void insertRandomValuesIntoMatrixUncompleted() {
         // Initialize matrixUncompleted if not already initialized
@@ -178,6 +219,12 @@ public class GameModel
             }
         }
     }
+    /**
+     * Returns a random number from the numbers list.
+     *
+     * @param i the index to retrieve the number from
+     * @return the random number
+     */
     public int getNumberAleatory(int i)
     {
         Collections.shuffle(numbers);

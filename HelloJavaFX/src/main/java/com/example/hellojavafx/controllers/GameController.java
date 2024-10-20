@@ -53,11 +53,10 @@ public class GameController {
      * This method performs the following steps:
      * 1. Configures the column constraints for the GridPane.
      * 2. Configures the row constraints for the GridPane.
-     * 3. Sets the horizontal and vertical gaps and padding for the GridPane.
+     * 3. Sets the horizontal and vertical gaps and padding/margin for the GridPane.
      * 4. Creates and configures TextArea elements for each cell in the 6x6 grid.
      * 5. Adds key event handlers to navigate between TextArea elements using arrow keys.
      * 6. Adds listeners to check for duplicates and winning conditions when the text changes.
-     * 7. Randomly assigns initial values to some cells in the grid.
      */
     @FXML
     void initialize() {
@@ -148,6 +147,13 @@ public class GameController {
         }
 
     }
+    /**
+     * Handles the action event for starting a new game.
+     * Displays a confirmation dialog to the user. If confirmed, it clears the current game state,
+     * sets up a new game matrix, inserts random values into the uncompleted matrix, and updates the TextAreas.
+     *
+     * @param event the action event triggered by the new game button
+     */
     @FXML
     void OnActionNewGameButton(ActionEvent event) {
         AlertBox alertBox = new AlertBox();
@@ -161,6 +167,10 @@ public class GameController {
             updateTextAreas();
         }
     }
+    /**
+     * Updates the TextAreas with values from the uncompleted matrix.
+     * Sets the text and makes the TextAreas non-editable if they contain a value.
+     */
     public void updateTextAreas() {
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
@@ -173,12 +183,23 @@ public class GameController {
         }
     }
 
-
+    /**
+     * Checks if the new value matches the completed matrix value at the specified row and column.
+     * If it matches, inserts the value into the uncompleted matrix.
+     *
+     * @param row the row index of the cell
+     * @param col the column index of the cell
+     * @param newValue the new value to check and update
+     */
     private void checkAndUpdateValue(int row, int col, String newValue) {
         if (newValue.equals(gameModel.getMatrixCompleted().get(row).get(col))) {
             gameModel.insertValueIntoMatrixUncompleted(row, col, newValue);
         }
     }
+    /**
+     * Clears the text and makes all TextAreas editable.
+     * Resets both the completed and uncompleted matrices in the game model.
+     */
     public void clearBoth() {
         for (List<TextArea> row : textAreas) {
             for (TextArea textArea : row) {
@@ -190,7 +211,7 @@ public class GameController {
     }
 
     /**
-     * Checks if the player has won the game.
+     * Checks if the player has won the game, if has won shows an alertbox.
      */
     public void checkIfWon() {
         boolean won = true;
