@@ -1,14 +1,19 @@
 package com.example.hellojavafx.controllers;
 
 import com.example.hellojavafx.models.GameModel;
+import com.example.hellojavafx.view.GameView;
 import com.example.hellojavafx.view.alert.AlertBox;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.control.*;
+import javafx.scene.image.Image;
 import javafx.scene.layout.*;
 import javafx.stage.Stage;
 
+import javax.swing.text.html.ImageView;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -42,6 +47,7 @@ public class GameController {
      */
     @FXML
     private Label labelInformation;
+
     /**
      * Initializes the game grid and sets up the TextArea elements.
      * This method performs the following steps:
@@ -78,6 +84,14 @@ public class GameController {
                 textArea.setPrefSize(40, 40);
                 textArea.setMaxSize(40, 40);
                 textArea.setMinSize(40, 40);
+
+                if (j % 3 == 0 && j != 0) {
+                    GridPane.setMargin(textArea, new Insets(0, 7, 0, 7));
+                }
+
+                if (i % 2 == 0 && i != 0) {
+                    GridPane.setMargin(textArea, new Insets(10, 0, 0, 0));
+                }
 
                 textArea.setTextFormatter(new TextFormatter<String>(change -> {
                     String newText = change.getControlNewText();
@@ -117,10 +131,10 @@ public class GameController {
                             break;
                     }
                 });
-
                 textArea.textProperty().addListener((observable, oldValue, newValue) -> {
                     if (!newValue.isEmpty()) {
                         checkForDuplicates(indexI, indexJ, newValue);
+                        checkAndUpdateValue(indexI, indexJ, newValue);
                         checkIfWon();
                     } else {
                         resetBorders(indexI, indexJ);
@@ -133,45 +147,56 @@ public class GameController {
             textAreas.add(row);
         }
 
-        for (int blockRow = 0; blockRow < 3; blockRow++) {
-            for (int blockCol = 0; blockCol < 2; blockCol++) {
-                List<int[]> positions = new ArrayList<>();
-
-                for (int i = 0; i < 2; i++) {
-                    for (int j = 0; j < 3; j++) {
-                        positions.add(new int[]{blockRow * 2 + i, blockCol * 3 + j});
-                    }
-                }
-
-                Collections.shuffle(positions);
-
-                int assigned = 0;
-                while (assigned < 2) {
-                    int[] pos = positions.get(assigned);
-                    int randomNum;
-
-                    do {
-                        randomNum = (int) (Math.random() * 6 + 1);
-                    } while (!isValidNumber(randomNum, pos[0], pos[1]));
-
-                    textAreas.get(pos[0]).get(pos[1]).setText(String.valueOf(randomNum));
-                    textAreas.get(pos[0]).get(pos[1]).setEditable(false);
-                    assigned++;
+    }
+    @FXML
+    void OnActionNewGameButton(ActionEvent event) {
+        AlertBox alertBox = new AlertBox();
+        boolean confirmed = alertBox.showConfirmation("Confirmacion", "¿Estas seguro que quieres comenzar un nuevo juego?, (Si ya has empezado un juego se borrará tu progreso actual)");
+        if (confirmed)
+        {
+            clearBoth();
+            int option = gameModel.getNumberAleatory(0); // Assuming getNumberAleatory returns a number between 0 and 4
+            gameModel.SetMatrix(option);
+            gameModel.insertRandomValuesIntoMatrixUncompleted();
+            updateTextAreas();
+        }
+    }
+    public void updateTextAreas() {
+        for (int i = 0; i < 6; i++) {
+            for (int j = 0; j < 6; j++) {
+                String value = gameModel.getMatrixUncompleted().get(i).get(j);
+                if (!value.isEmpty()) {
+                    textAreas.get(i).get(j).setText(value);
+                    textAreas.get(i).get(j).setEditable(false);
                 }
             }
         }
     }
+
+
+    private void checkAndUpdateValue(int row, int col, String newValue) {
+        if (newValue.equals(gameModel.getMatrixCompleted().get(row).get(col))) {
+            gameModel.insertValueIntoMatrixUncompleted(row, col, newValue);
+        }
+    }
+    public void clearBoth() {
+        for (List<TextArea> row : textAreas) {
+            for (TextArea textArea : row) {
+                textArea.setText("");
+                textArea.setEditable(true);
+            }
+        }
+        gameModel.resetBothMatrix();
+    }
+
     /**
      * Checks if the player has won the game.
      */
     public void checkIfWon() {
         boolean won = true;
-
         for (int i = 0; i < 6; i++) {
             for (int j = 0; j < 6; j++) {
-                if (textAreas.get(i).get(j).getText().isEmpty() ||
-                        textAreas.get(i).get(j).getStyle().contains("-fx-border-color: red") ||
-                        textAreas.get(i).get(j).getStyle().contains("-fx-text-fill: yellow")) {
+                if (!gameModel.getMatrixUncompleted().get(i).get(j).equals(gameModel.getMatrixCompleted().get(i).get(j))) {
                     won = false;
                     break;
                 }
@@ -191,76 +216,18 @@ public class GameController {
             stage.close();
         }
     }
-    /**
-     * Validates if a number can be placed in a specific cell without violating Sudoku rules.
-     *
-     * @param number the number to validate
-     * @param row the row index of the cell
-     * @param col the column index of the cell
-     * @return true if the number is valid, false otherwise
-     */
-    public boolean isValidNumber(int number, int row, int col) {
-        //checks if the number is already in the same row or column
-        for (int i = 0; i < 6; i++) {
-            if (textAreas.get(row).get(i).getText().equals(String.valueOf(number)) ||
-                    textAreas.get(i).get(col).getText().equals(String.valueOf(number))) {
-                return false;
-            }
-        }
-        //checks if the number is already in the same block
-        int startRow = (row / 2) * 2;
-        int startCol = (col / 3) * 3;
-        for (int i = 0; i < 2; i++) {
-            for (int j = 0; j < 3; j++) {
-                if (textAreas.get(startRow + i).get(startCol + j).getText().equals(String.valueOf(number))) {
-                    return false;
-                }
-            }
-        }
 
-        return true;
-    }
     /**
      * Checks for duplicate values in the same row, column, or block.
      *
-     * @param row the row index of the cell
-     * @param col the column index of the cell
+     * @param row      the row index of the cell
+     * @param col      the column index of the cell
      * @param newValue the new value to check for duplicates
      */
     private void checkForDuplicates(int row, int col, String newValue) {
-        boolean duplicateFound = false;
-        //checks for duplicates in the same row
-        for (int i = 0; i < 6; i++) {
-            if (i != col && textAreas.get(row).get(i).getText().equals(newValue)) {
-                duplicateFound = true;
-                break;
-            }
-        }
-        //checks for duplicates in the same column
-        if (!duplicateFound) {
-            for (int i = 0; i < 6; i++) {
-                if (i != row && textAreas.get(i).get(col).getText().equals(newValue)) {
-                    duplicateFound = true;
-                    break;
-                }
-            }
-        }
-        //checks for duplicates in the same block
-        if (!duplicateFound) {
-            int startRow = (row / 2) * 2;
-            int startCol = (col / 3) * 3;
-            for (int i = 0; i < 2; i++) {
-                for (int j = 0; j < 3; j++) {
-                    if (!(startRow + i == row && startCol + j == col) &&
-                            textAreas.get(startRow + i).get(startCol + j).getText().equals(newValue)) {
-                        duplicateFound = true;
-                        break;
-                    }
-                }
-            }
-        }
+        boolean duplicateFound = gameModel.isValidNumber(newValue, row, col);
         //If a duplicate is found, set the border color to red and show an error message
-        if (duplicateFound) {
+        if (!duplicateFound) {
             textAreas.get(row).get(col).setStyle("-fx-border-color: red");
             new AlertBox().showAlert(
                     "Error",
@@ -272,6 +239,7 @@ public class GameController {
             textAreas.get(row).get(col).setStyle("");
         }
     }
+
     /**
      * Resets the border style of a cell.
      *
@@ -299,31 +267,18 @@ public class GameController {
             }
         }
 
-        if (emptyPositions.isEmpty()) {
-            new AlertBox().showAlert(
-                    "Error",
-                    "No hay espacios vacios en el tablero.",
-                    "",
-                    Alert.AlertType.ERROR
-            );
-            return;
-        }
-
         Collections.shuffle(emptyPositions);
-        int[] pos = emptyPositions.get(0);
-        int row = pos[0];
-        int col = pos[1];
 
-        int randomNum;
+        if (!emptyPositions.isEmpty()) {
+            int[] pos = emptyPositions.get(0);
+            int row = pos[0];
+            int col = pos[1];
 
-        do {
-            randomNum = (int) (Math.random() * 6 + 1);
-        } while (!isValidNumber(randomNum, row, col));
+            String value = gameModel.getMatrixCompleted().get(row).get(col);
+            gameModel.insertValueIntoMatrixUncompleted(row, col, value);
 
-
-        textAreas.get(row).get(col).setText(String.valueOf(randomNum));
-
-
-        textAreas.get(row).get(col).setStyle("-fx-text-fill: yellow;");
+            textAreas.get(row).get(col).setText(value);
+            textAreas.get(row).get(col).setEditable(false);
+        }
     }
 }
